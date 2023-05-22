@@ -153,7 +153,11 @@ func SubmitTaskOrder(c *gin.Context) {
 	if changeFunc == -1 {
 		db.Model(&model.TaskOrder{}).Where("id=?", taskOrder.ID).Update(&model.TaskOrder{Updated: time.Now().Unix(), Status: 2})
 		//ReturnErr101Code(c, map[string]interface{}{"identification": "DotEnoughMoney", "msg": DotEnoughMoney})
-		tools.JsonWrite(c, NoEnoughMoney, nil, err.Error())
+		result := map[string]interface{}{}
+		result["needMoney"] = err.Error()           //需要多少钱
+		result["OrderMoney"] = taskOrder.OrderMoney //订单金额
+		result["reward"] = taskOrder.CommissionMoney
+		tools.JsonWrite(c, NoEnoughMoney, result, err.Error())
 		return
 	}
 	if changeFunc == -2 {
