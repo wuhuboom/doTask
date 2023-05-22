@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+
+    <!-- js部分 -->
+    <script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+    <script type="text/javascript" src="../../assets/js/common.js?v=318"></script>
+
+    <script type="text/javascript" src="../../assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../../assets/js/jquery.cookie.min.js"></script>
+    <script type="text/javascript" src="../../assets/js/config.url.js"></script>
+    <!--引入 element-ui 的样式，-->
+<!--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- 引入element 的组件库-->
+<!--    <script src="https://unpkg.com/element-ui/lib/index.js"></script>-->
+
+
+    <style>
+
+        .layui-table-cell {
+            height: 46px;
+            line-height: 46px;
+        }
+
+    </style>
+</head>
+<body class="childrenBody">
+<div id="app">
+    <form class="layui-form" style="width:80%;margin-top: 20px;">
+        <div style="display: flex;">
+
+            <div>
+                <div class="layui-form-item layui-row layui-col-xs6">
+                    <label class="layui-form-label">任务名</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input " id="task_name" placeholder="请在此修改任务名"
+                               style="width: 200px;">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-row layui-col-xs12">
+                    <label class="layui-form-label">VIP等级</label>
+                    <div class="layui-input-block">
+                        <select name="vip_filter" id="vip_filter" lay-filter="vip_filter">
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-row layui-col-xs12">
+                    <label class="layui-form-label">佣金比例</label>
+                    <div class="layui-input-block">
+                        <!--                <button class="layui-btn layui-btn-sm " lay-event="addComissBtn" id="addRow" style="background-color: #f00 "><i class="layui-icon layui-icon-add-1"></i>添加</button>-->
+                        <button type="button" class="layui-btn layui-btn-sm " @click="addRow"
+                                style="background-color: #005eff "><i class="layui-icon layui-icon-add-1"></i>新增
+                        </button>
+                        <!--                    <input type="text" class="layui-input " id="PayPassword" placeholder="请在此修改佣金比例">-->
+                    </div>
+                </div>
+            </div>
+
+
+            <div>
+                <div class="layui-form-item layui-row layui-col-xs12">
+                    <label class="layui-form-label">是否弹窗</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="dialogFilter" id="dialogFilter" lay-filter="dialogFilter" lay-skin="switch"
+                               lay-text='是|否'>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-row layui-col-xs12" id="uploadDiaImgDiv">
+                    <label class="layui-form-label">图片操作</label>
+                    <div class="layui-input-block">
+                        <button type="button" class="layui-btn layui-btn-sm" id="uploadDiaImg">
+                            <i class="layui-icon">&#xe67c;</i>上传
+                        </button>
+
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-row layui-col-xs12"  id="diaImgDiv">
+                    <label class="layui-form-label">弹窗图片</label>
+                    <div class="layui-input-block">
+                        <img src="" width="60px" height="60px" id="diaImg"/>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+
+    <div class="layui-form-item layui-row layui-col-xs12">
+        <form class="layui-form" action="">
+            <div class="layui-form" id="">
+                <table class="layui-table">
+                    <colgroup>
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>佣金类型</th>
+                        <th>佣金</th>
+                        <th>余额扣费比例</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(item, index) in showMealList">
+                        <td>
+                            <select style="width: 80px;" name="commtype" v-bind:rowIndex="index" v-model="item.commtype"
+                                    lay-filter="comm_filter">
+                                <!--                            <option></option>-->
+                                <option v-for="(gradeObj, gradeIndex) in commissionTypeS"
+                                        :checked="item.commtype === gradeObj.value">{{gradeObj.name}}
+                                </option>
+                            </select>
+                        </td>
+                        <td><input type="text" name="userName" placeholder="请输入" autocomplete="off" class="layui-input"
+                                   v-model="item.sCommissionRate" ></td>
+                        <td><input type="text" name="userName" placeholder="请输入" autocomplete="off" class="layui-input"
+                                   v-model="item.sPayMod"></td>
+
+                        <td>
+                            <button type="button" class="layui-btn layui-btn-sm layui-btn-danger"
+                                    @click="delRow(index)"><i class="layui-icon layui-icon-delete"></i>删除
+                            </button>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+
+    <div class="layui-form-item layui-row layui-col-xs12">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-lg" lay-filter="comfireEdit" id="comfireEdit" @click="comfireEdit">确认修改
+            </button>
+            <button class="layui-btn layui-btn-lg layui-btn-primary" lay-filter="cancelAdd" id="cancelAdd">取消</button>
+        </div>
+    </div>
+</div>
+<!--<div style="display:flex;flex-direction: column">-->
+<!--    <div>-->
+
+
+<!--    </div>-->
+
+<!--    <div style="padding: 20">-->
+<!--        &lt;!&ndash; 数据表格&ndash;&gt;-->
+<!--        <table id="tabAddSell" lay-filter="tabAddSell" style="margin-top:10px"></table>-->
+<!--    </div>-->
+
+
+<!--</div>-->
+
+
+<script>
+
+    var mybck = $.cookie('tokenMyb');
+    if (mybck == "" || mybck == null) {
+
+
+        window.top.location.href = "../../login.html";
+
+    } else {
+        var currParentDatas = eval('(' + parent.jsondata + ')')
+
+        $("#uploadDiaImgDiv").hide()
+        $("#diaImgDiv").hide()
+        // console.log("currParentDatas", currParentDatas)
+        // console.log("re", currParentDatas.TaskName)
+        // console.log("aa", currParentDatas.AllCommissionRate)
+        // console.log("bb", currParentDatas.PayMod)
+
+        let initList = []
+        var form;
+        var uploadFileOBJ
+        var dialogIndex = 1
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'notice', 'upload'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            // var layer = parent.layer === undefined ? layui.layer : top.layer;
+            form = layui.form;
+            var table = layui.table;
+            var util = layui.util;
+            var admin = layui.admin;
+            var xmSelect = layui.xmSelect;
+            var notice = layui.notice;
+            var upload = layui.upload;
+
+
+
+            if(currParentDatas.Dialog === 1){
+
+                $("#dialogFilter").attr("value", '1');
+                $("#dialogFilter").removeAttr('checked')
+                $("#uploadDiaImgDiv").hide()
+                $("#diaImgDiv").hide()
+                dialogIndex = 1
+            }else {
+                $("#dialogFilter").attr("value", '2');
+                $('#dialogFilter').attr('checked', 'checked'); //改变开关为 开
+
+                $("#diaImg").attr('src', global_requestAddress + "/" + currParentDatas.DialogImage)
+
+                $("#uploadDiaImgDiv").show()
+                $("#diaImgDiv").show()
+                dialogIndex = 2
+
+            }
+
+            //重要,switch attr 之后需要重新渲染checkbox，否则没有效果
+            form.render('checkbox');
+
+
+            let commRateStr = currParentDatas.AllCommissionRate
+            let commRateArr = commRateStr.split(";")
+            // console.log("commRateArr", commRateArr)
+
+            let payModStr = currParentDatas.PayMod
+            let payModArr = payModStr.split(";")
+            // console.log("payModArr", payModArr)
+
+
+            commRateArr.forEach((itemComm, index) => {
+                // console.log("itemComm", itemComm)
+
+                initList.push({
+                    commtype: itemComm.split('@')[0] === 'M' ? '固定金额' : '百分比',
+                    sCommissionRate: itemComm.split('@')[1],
+                    sPayMod: payModArr[index],
+                })
+
+            })
+
+            // console.log("initList", initList)
+            $("#task_name").val(currParentDatas.TaskName)
+            // $("#Password").val(currParentDatas.Password)
+            // $("#PayPassword").val(currParentDatas.PayPassword)
+
+
+            //执行实例(不主动上传图片)
+            upload.render({
+                elem: '#uploadDiaImg' //绑定元素
+                , url: '/api/upload/'
+                , auto: false //选择文件后不自动上传
+                , headers: {
+                    token: mybck
+                }
+                ,data: {
+                    "aaaa": 123
+                }
+                ,accept:"images"
+                ,acceptMime: 'image/jpg, image/png'
+                // , bindAction: '#comfireEdit' //指向一个按钮触发上传
+                , choose: function (obj) {
+                    //将每次选择的文件追加到文件队列
+                    var files = obj.pushFile();
+
+                    //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+                    obj.preview(function (index, file, result) {
+                        // console.log(index); //得到文件索引
+                        console.log(file); //得到文件对象
+                        uploadFileOBJ = file
+                        $("#diaImg").attr('src',result)
+                        // console.log(result); //得到文件base64编码，比如图片
+                        //obj.resetFile(index, file, '123.jpg'); //重命名文件名，layui 2.3.0 开始新增
+                        //这里还可以做一些 append 文件列表 DOM 的操作
+                        //obj.upload(index, file); //对上传失败的单个文件重新上传，一般在某个事件中使用
+                        //delete files[index]; //删除列表中对应的文件，一般在某个事件中使用
+                    });
+                }
+                ,done: function (res) {
+                    //上传完毕回调
+                }
+                ,error: function () {
+                    //请求异常回调
+                }
+            });
+
+
+            //获取VIP列表添加到下拉框中
+            var param = {};
+            $.ajax({
+                url: global_requestAddress + global_requestAddress_js_vip + "?action=select",
+                headers: {
+                    "token": mybck
+                },
+                dataType: 'json',
+                type: 'post',
+                data: param,
+                success: function (res) {
+                    if (res.code === 2000) {
+                        var returnDataArray = res.result
+                        $("#vip_filter").empty();
+                        // $('#vip_filter').append(new Option('全部', '999999'));// 下拉菜单里添加元素
+                        $.each(returnDataArray, function (index, item) {
+                            $('#vip_filter').append(new Option(item.Name, item.ID));// 下拉菜单里添加元素
+                        });
+
+                        //利用val值来设置的时候
+                        $('#vip_filter').val(currParentDatas.VipId)
+                        //利用标题来设置的时候
+                        // $('#vip_filter').find('option:contains(' + currParentDatas.VipId + ')').prop('selected',true);
+                        //重新渲染 固定写法
+                        form.render("select");
+                    }
+                }
+            })
+
+
+            //下拉框选择事件
+            form.on('select(comm_filter)', function (data) {
+                var rowValue = data.elem.getAttribute('rowIndex');
+                //这里加个name 可以区分同一行多个select
+                var valueName = data.elem.getAttribute('name');
+                console.log("valueName", valueName)
+                app.showMealList[rowValue][valueName] = data.value;
+                console.log("data.value", data, data.value)
+            });
+
+
+            //监听是佛偶开启弹窗开关按钮操作
+            form.on('switch(dialogFilter)', function (obj) {
+
+                // console.log("obj",obj)
+
+                var currStatusBool = obj.elem.checked;
+
+                // console.log("currStatusBool",currStatusBool)
+                if (currStatusBool) {  //开
+                    dialogIndex = 2
+                    $("#diaImg").attr('src', global_requestAddress + "/" + currParentDatas.DialogImage)
+                    $("#uploadDiaImgDiv").show()
+                    $("#diaImgDiv").show()
+
+                } else { //关
+                    dialogIndex = 1
+                    $("#uploadDiaImgDiv").hide()
+                    $("#diaImgDiv").hide()
+
+                }
+
+
+            });
+
+
+            //取消操作点击事件
+            $("#cancelAdd").click(function () {
+
+                // layer.msg("取消操作");
+                notice.msg('取消操作!', {icon: 5});
+                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                parent.layer.close(index);
+                // window.parent.location.reload();
+
+
+                return false;
+
+            })
+
+        })
+
+        var app = new Vue({
+            el: '#app',
+            data: {
+                message: '  ',
+                // '固定金额','百分比'
+                commissionTypeS: [{
+                    name: "固定金额",
+                    value: "M",
+                }, {
+                    name: "百分比",
+                    value: "P",
+                }],
+                rowObj: {
+                    commtype: '固定金额',
+                    sCommissionRate: '',
+                    sPayMod: '',
+                },
+                showMealList: []
+            },
+            created: function () {
+                // this.showMealList[0] = JSON.parse(JSON.stringify(this.rowObj))
+                this.showMealList = initList
+            },
+            watch: {},
+            methods: {
+                addRow: function () {
+                    console.log('addRow')
+                    //this.$set(this.showMealList, showMealListlength, this.rowObj);
+                    var newObj = JSON.parse(JSON.stringify(this.rowObj))
+                    this.showMealList.push(newObj)
+                },
+                delRow: function (rowIndex) {
+                    // console.log(rowIndex)
+                    this.showMealList.splice(rowIndex, 1);
+                },
+                comfireEdit() {
+                    // console.log(" this.showMealList", this.showMealList)
+
+                    if(!$("#task_name").val()){
+                        layer.msg("任务名不允许为空!", {icon: 2});
+                        return false
+                    }
+
+
+                    let all_commission_rate_s = ""
+                    let pay_mod_s = ""
+                    let commtypeStr = ""
+                    this.showMealList.forEach((item)=>{
+
+
+                        if(item.commtype){
+                            if(item.commtype === '固定金额'){
+                                commtypeStr = "M"
+                            }else{
+                                commtypeStr = "P"
+                            }
+
+
+                        }
+
+                        if(item.sCommissionRate && item.sPayMod  && item.sCommissionRate != '0' && item.sPayMod != '0' ){
+                            all_commission_rate_s += commtypeStr+"@"+item.sCommissionRate+";"
+                            pay_mod_s +=item.sPayMod+";"
+                        }
+
+                        // console.log("item.sCommissionRate",item.sCommissionRate)
+                        // console.log("item.sPayMod",item.sPayMod)
+                        //
+                        //
+
+
+                    })
+
+                    all_commission_rate_s = all_commission_rate_s.substring(0, all_commission_rate_s.length - 1);
+                    pay_mod_s = pay_mod_s.substring(0, pay_mod_s.length - 1);
+                    // console.log("all_commission_rate_s",all_commission_rate_s)
+                    // console.log("pay_mod_s",pay_mod_s)
+
+                    //④创建一个formData对象
+                    var formData = new FormData();
+                    //⑦将name 和 files 添加到formData中，键值对形式
+                    formData.append("dialog_image", uploadFileOBJ);
+                    // console.log(formData.get('dialog_image'));
+
+                    formData.append("id", currParentDatas.ID);
+                    formData.append("dialog", dialogIndex);
+                    let task_name_str = $("#task_name").val()
+                    formData.append("task_name", task_name_str);
+
+                    let vip_filter_str = $("#vip_filter").val()
+                    formData.append("vip_id", vip_filter_str);
+                    formData.append("overlay_id", 0);
+                    formData.append("overlay_index", 1);
+                    formData.append("task_count", this.showMealList.length);
+
+                    if(!all_commission_rate_s && !pay_mod_s){
+                        layer.msg("请修改佣金比例和扣费比例,否则无法修改！", {icon: 2});
+
+                        return false
+                    }
+
+                    formData.append("all_commission_rate", all_commission_rate_s);
+                    formData.append("pay_mod",pay_mod_s);
+
+                    $.ajax({
+                        url: global_requestAddress+global_requestAddress_js_group+"?action=update",
+                        headers:{
+                          token:mybck
+                        },
+                        type: 'POST',
+                        data: formData,
+                        processData: false,// ⑧告诉jQuery不要去处理发送的数据
+                        contentType: false, // ⑨告诉jQuery不要去设置Content-Type请求头
+                        beforeSend: function () {
+                            //⑩发送之前的动作
+                        },
+                        success: function (responseStr) {
+                            if(2000 === responseStr.code){
+                                layer.msg(responseStr.msg, {icon: 1});
+                                setTimeout(function () {
+                                    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                                    parent.layer.close(index);
+                                    // window.parent.location.reload();
+                                }, 1300)
+                            }else{
+                                layer.msg(responseStr.msg, {icon: 2});
+                            }
+                        },
+                        error : function (responseStr) {
+
+
+                        }
+                    });
+
+                }
+            },
+            updated: function () {
+                form.render();
+            }
+
+
+        })
+
+    }
+</script>
+</body>
+</html>

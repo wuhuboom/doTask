@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+    <script src="../../assets/js/moment.js"></script>
+    <!-- js部分 -->
+    <script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+    <script type="text/javascript" src="../../assets/js/common.js?v=318"></script>
+
+    <script type="text/javascript" src="../../assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../../assets/js/jquery.cookie.min.js"></script>
+    <script type="text/javascript" src="../../assets/js/config.url.js"></script>
+    <style>
+        .flexDiv {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="childrenBody">
+
+<form class="layui-form" id="formAdvForm" lay-filter="formAdvForm">
+    <div class="layui-fluid" style="padding-bottom: 75px;">
+        <div class="layui-card">
+            <div class="layui-card-header">基本配置</div>
+            <div class="layui-card-body">
+                <div class="layui-form-item layui-row">
+                    <div class="layui-inline layui-col-md3">
+                        <label class="layui-form-label layui-form-required">代付名称:</label>
+                        <div class="layui-input-block">
+                            <input name="name" id="name" placeholder="请输入支付名称" class="layui-input"
+                                   lay-verType="tips" lay-verify="required" required/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md3">
+                        <label class="layui-form-label layui-form-required">代付类型 :</label>
+                        <div class="layui-input-block">
+                            <select name="pay_type" id="pay_type" lay-filter="payTypeFilter" lay-verType="tips"
+                                    lay-verify="required" required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md3" id="pay_url_div">
+                        <label class="layui-form-label layui-form-required">支付地址 :</label>
+                        <div class="layui-input-block">
+                            <input name="pay_url" id="pay_url" placeholder="请输入支付地址" class="layui-input"
+                                   lay-verType="tips" />
+                        </div>
+                    </div>
+
+                    <div class="layui-inline layui-col-md3">
+                        <label class="layui-form-label layui-form-required">国家:</label>
+                        <div class="layui-input-block">
+                            <select name="country_id" id="country_id" lay-filter="countryFilter" lay-verType="tips"
+                                    lay-verify="required" required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md3" id="country_code_div">
+                        <label class="layui-form-label layui-form-required">国家代码:</label>
+                        <div class="layui-input-block">
+                            <input name="country_code" id="country_code" placeholder="请输入国家代码" class="layui-input"
+                                   lay-verType="tips"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md3">
+                        <label class="layui-form-label layui-form-required">货币符号:</label>
+                        <div class="layui-input-block">
+                            <input name="currency_symbol" id="currency_symbol" placeholder="请输入支付地址" class="layui-input"
+                                   lay-verType="tips" lay-verify="required" required/>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="layui-card">
+            <div class="layui-card-header">其他配置</div>
+            <div class="layui-card-body">
+
+                <div class="layui-form-item layui-row">
+                    <div class="layui-inline layui-col-md9"  id="back_url_show_div">
+                        <label class="layui-form-label ">回调地址:</label>
+                        <div class="layui-input-block">
+                            <input name="back_url_show" id="back_url_show" class="layui-input" readonly/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label layui-form-required">汇率:</label>
+                        <div class="layui-input-block">
+                            <input name="exchange_rate" id="exchange_rate" placeholder="请输入汇率" class="layui-input" lay-verify="required" required/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4" id="back_ip_div">
+                        <label class="layui-form-label ">白名单:</label>
+                        <div class="layui-input-block">
+                            <input name="back_ip" id="back_ip" placeholder="请输入白名单" class="layui-input"/>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="layui-card">
+            <div class="layui-card-header">三方配置</div>
+            <div class="layui-card-body">
+                <div class="layui-form-item layui-row">
+                    <div class="layui-inline layui-col-md3" id="extended_params_div">
+                        <label class="layui-form-label layui-form-required">扩展参数:</label>
+                        <div class="layui-input-block">
+                            <select name="extended_params" id="extended_params" lay-filter="extendedParamsFilter" lay-verType="tips"
+                                     required>
+                                <option value="1">墨西哥</option>
+                                <option value="2">哥伦比亚</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4" id="merchants_div">
+                        <label class="layui-form-label layui-form-required">商户号:</label>
+                        <div class="layui-input-block">
+                            <input name="merchants" id="merchants" placeholder="请输入商户号" class="layui-input"
+                                   lay-verType="tips"  required/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4" id="pay_code_div">
+                        <label class="layui-form-label layui-form-required">代付代码:</label>
+                        <div class="layui-input-block">
+                            <input name="pay_code" id="pay_code" placeholder="请输入代付代码" class="layui-input"
+                                   lay-verType="tips"  required/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md3" id="bank_pay_id_div">
+                        <label class="layui-form-label layui-form-required">银行:</label>
+                        <div class="layui-input-block">
+                            <select name="bank_pay_id" id="bank_pay_id" lay-filter="bankPayFilter" lay-verType="tips"
+                                    required>
+                            </select>
+                        </div>
+                    </div>
+<!--                    <div class="layui-inline layui-col-md4" id="goods_div">-->
+<!--                        <label class="layui-form-label layui-form-required">MD5秘钥:</label>-->
+<!--                        <div class="layui-input-block">-->
+<!--                            <input name="goods" id="goods" placeholder="请输入MD5秘钥" class="layui-input"-->
+<!--                                   lay-verType="tips"/>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                    <div class="layui-inline layui-col-md4" id="key_div">
+                        <label class="layui-form-label layui-form-required">支付密钥:</label>
+                        <div class="layui-input-block">
+                            <input name="key" id="key" placeholder="请输入支付密钥" class="layui-input"
+                                   lay-verType="tips" required/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md12" id="public_key_div">
+                        <label class="layui-form-label layui-form-required">公钥:</label>
+                        <div class="layui-input-block">
+                             <textarea name="public_key" id="public_key" placeholder="请输入公钥" class="layui-textarea"
+                                       lay-verType="tips"></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md12" id="private_key_div">
+                        <label class="layui-form-label layui-form-required">私钥:</label>
+                        <div class="layui-input-block">
+                             <textarea name="private_key" id="private_key" placeholder="请输入私钥" class="layui-textarea"
+                                       lay-verType="tips"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group-bottom text-right" style="margin-bottom: 20px">
+            <button class="layui-btn layui-btn-lg" lay-filter="comfireEdit" id="comfireEdit" lay-submit>确认</button>
+            <button class="layui-btn layui-btn-lg layui-btn-primary" lay-filter="cancelAdd" id="cancelAdd">取消</button>
+        </div>
+
+    </div>
+
+
+</form>
+
+<script>
+
+    var mybck = $.cookie('tokenMyb');
+    if (mybck == "" || mybck == null) {
+
+
+        window.top.location.href = "../../login.html";
+
+    } else {
+        var currParentDatas = eval('(' + parent.jsondata + ')')
+        var selectPayTypeValue = 0
+
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'notice'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            // var layer = parent.layer === undefined ? layui.layer : top.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var util = layui.util;
+            var admin = layui.admin;
+            var xmSelect = layui.xmSelect;
+            var notice = layui.notice;
+
+            $("#name").val(currParentDatas.Name)
+            $("#pay_url").val(currParentDatas.PayUrl)
+            $("#country_code").val(currParentDatas.CountryCode)
+            $("#currency_symbol").val(currParentDatas.CurrencySymbol)
+
+            $("#back_url_show").val(currParentDatas.BackUrl)
+            $("#exchange_rate").val(currParentDatas.ExchangeRate)
+            $("#back_ip").val(currParentDatas.BackIp)
+
+            //
+            $("#extended_params").val(currParentDatas.ExtendedParams)
+            $("#merchants").val(currParentDatas.Merchants)
+            $("#pay_code").val(currParentDatas.PayCode)
+            $("#key").val(currParentDatas.Key)
+            $("#public_key").val(currParentDatas.PublicKey)
+            $("#private_key").val(currParentDatas.PrivateKey)
+
+
+            // $("#goods").val(currParentDatas.Goods)
+            // $("#pay_interval").val(currParentDatas.PayInterval)
+            // $("#pay_fast").val(currParentDatas.PayFast)
+
+
+
+            selectPayTypeValue = currParentDatas.PayType
+
+            //页面初始
+            if (currParentDatas.PayType === 2) { //Bpay
+                $("#pay_url_div").show()
+                $("#country_code_div").show()
+                $("#back_url_show_div").show()
+                $("#back_ip_div").show()
+                $("#extended_params_div").show()
+                $("#merchants_div").show()
+                $("#pay_code_div").show()
+                $("#bank_pay_id_div").show()
+                $("#key_div").hide()
+                $("#public_key_div").show()
+                $("#private_key_div").show()
+
+                $("#pay_url").attr('lay-verify', 'required')
+                $("#country_code").attr('lay-verify', 'required')
+                $("#back_url_show").removeAttr('lay-verify')
+                $("#back_ip").removeAttr('lay-verify')
+                $("#extended_params").attr('lay-verify', 'required')
+                $("#merchants").attr('lay-verify', 'required')
+                $("#pay_code").attr('lay-verify', 'required')
+                $("#bank_pay_id").attr('lay-verify', 'required')
+                $("#key").removeAttr('lay-verify')
+                $("#public_key").attr('lay-verify', 'required')
+                $("#private_key").attr('lay-verify', 'required')
+
+            } else if (currParentDatas.PayType === 3) { //lrPay
+
+                $("#pay_url_div").show()
+                $("#country_code_div").hide()
+                $("#back_url_show_div").show()
+                $("#back_ip_div").show()
+                $("#extended_params_div").show()
+                $("#merchants_div").show()
+                $("#pay_code_div").hide()
+                $("#bank_pay_id_div").show()
+                $("#key_div").show()
+                $("#public_key_div").hide()
+                $("#private_key_div").show()
+
+                $("#pay_url").attr('lay-verify', 'required')
+                $("#country_code").removeAttr('lay-verify')
+                $("#back_url_show").removeAttr('lay-verify')
+                $("#back_ip").removeAttr('lay-verify')
+                $("#extended_params").attr('lay-verify', 'required')
+                $("#merchants").attr('lay-verify', 'required')
+                $("#pay_code").removeAttr('lay-verify')
+                $("#bank_pay_id").attr('lay-verify', 'required')
+                $("#key").attr('lay-verify', 'required')
+                $("#public_key").removeAttr('lay-verify')
+                $("#private_key").attr('lay-verify', 'required')
+
+            } else if (currParentDatas.PayType === 4) { //wowPay
+
+                $("#pay_url_div").show()
+                $("#country_code_div").hide()
+                $("#back_url_show_div").show()
+                $("#back_ip_div").show()
+                $("#extended_params_div").show()
+                $("#merchants_div").show()
+                $("#pay_code_div").hide()
+                $("#bank_pay_id_div").show()
+                $("#key_div").show()
+                $("#public_key_div").hide()
+                $("#private_key_div").hide()
+
+                $("#pay_url").attr('lay-verify', 'required')
+                $("#country_code").removeAttr('lay-verify')
+                $("#back_url_show").removeAttr('lay-verify')
+                $("#back_ip").removeAttr('lay-verify')
+                $("#extended_params").attr('lay-verify', 'required')
+                $("#merchants").attr('lay-verify', 'required')
+                $("#pay_code").removeAttr('lay-verify')
+                $("#bank_pay_id").attr('lay-verify', 'required')
+                $("#key").attr('lay-verify', 'required')
+                $("#public_key").removeAttr('lay-verify')
+                $("#private_key").removeAttr('lay-verify')
+
+            }else if(currParentDatas.PayType === 1){ //本地代付
+                $("#pay_url_div").hide()
+                $("#country_code_div").hide()
+                $("#back_url_show_div").hide()
+                $("#back_ip_div").hide()
+                $("#extended_params_div").hide()
+                $("#merchants_div").hide()
+                $("#pay_code_div").hide()
+                $("#bank_pay_id_div").hide()
+                $("#key_div").hide()
+                $("#public_key_div").hide()
+                $("#private_key_div").hide()
+
+                $("#pay_url").removeAttr('lay-verify')
+                $("#country_code").removeAttr('lay-verify')
+                $("#back_url_show").removeAttr('lay-verify')
+                $("#back_ip").removeAttr('lay-verify')
+                $("#extended_params").removeAttr('lay-verify')
+                $("#merchants").removeAttr('lay-verify')
+                $("#pay_code").removeAttr('lay-verify')
+                $("#bank_pay_id").removeAttr('lay-verify')
+                $("#key").removeAttr('lay-verify')
+                $("#public_key").removeAttr('lay-verify')
+                $("#private_key").removeAttr('lay-verify')
+            }
+
+            $("#pay_type").empty();
+            $.each(anotherPayTypeList, function (index, item) {
+                $('#pay_type').append(new Option(item.name, item.value));// 下拉菜单里添加元素
+            });
+            $('#pay_type').val(currParentDatas.PayType)
+            //重新渲染 固定写法
+            form.render("select");
+
+            //获取国家添加到下拉框中
+            var param = {};
+            param.page = 1
+            param.limit = 3000
+            $.ajax({
+                url: global_requestAddress + global_requestAddress_js_country + "?action=select",
+                headers: {
+                    "token": mybck
+                },
+                dataType: 'json',
+                type: 'post',
+                data: param,
+                success: function (res) {
+                    if (res.code === 2000) {
+                        var returnDataArray = res.result
+                        $("#country_id").empty();
+                        // $('#role_filter').append(new Option('全部', '999999'));// 下拉菜单里添加元素
+                        $.each(returnDataArray, function (index, item) {
+                            $('#country_id').append(new Option(item.CountryName, item.ID));// 下拉菜单里添加元素
+                        });
+
+                        // //利用val值来设置的时候
+                        $('#country_id').val(currParentDatas.CountryId)
+
+                        //重新渲染 固定写法
+                        form.render("select");
+                    }
+                }
+            })
+
+            //获取银行添加到下拉框中
+            var bank_param = {};
+            bank_param.status = 1
+            bank_param.page = 1
+            bank_param.limit = 3000
+            $.ajax({
+                url: global_requestAddress + global_requestAddress_js_bank + "?action=select",
+                headers: {
+                    "token": mybck
+                },
+                dataType: 'json',
+                type: 'post',
+                data: bank_param,
+                success: function (res) {
+                    if (res.code === 2000) {
+                        let returnDataArray = res.result
+                        $("#bank_pay_id").empty();
+                        // $('#role_filter').append(new Option('全部', '999999'));// 下拉菜单里添加元素
+                        $.each(returnDataArray, function (index, item) {
+                            $('#bank_pay_id').append(new Option(item.Name, item.ID));// 下拉菜单里添加元素
+                        });
+
+                        //利用val值来设置的时候
+                        $('#bank_pay_id').val(currParentDatas.BankPayId)
+
+                        //重新渲染 固定写法
+                        form.render("select");
+                    }
+                }
+            })
+
+
+            //下拉框选择事件
+            form.on("select(payTypeFilter)", function (data) {
+                //选择的select对象值；
+                selectPayTypeValue = data.value;
+
+                if (data.value == 2) { //Bpay
+                    $("#pay_url_div").show()
+                    $("#country_code_div").show()
+                    $("#back_url_show_div").show()
+                    $("#back_ip_div").show()
+                    $("#extended_params_div").show()
+                    $("#merchants_div").show()
+                    $("#pay_code_div").show()
+                    $("#bank_pay_id_div").show()
+                    $("#key_div").hide()
+                    $("#public_key_div").show()
+                    $("#private_key_div").show()
+
+                    $("#pay_url").attr('lay-verify', 'required')
+                    $("#country_code").attr('lay-verify', 'required')
+                    $("#back_url_show").removeAttr('lay-verify')
+                    $("#back_ip").removeAttr('lay-verify')
+                    $("#extended_params").attr('lay-verify', 'required')
+                    $("#merchants").attr('lay-verify', 'required')
+                    $("#pay_code").attr('lay-verify', 'required')
+                    $("#bank_pay_id").attr('lay-verify', 'required')
+                    $("#key").removeAttr('lay-verify')
+                    $("#public_key").attr('lay-verify', 'required')
+                    $("#private_key").attr('lay-verify', 'required')
+
+                } else if (data.value == 3) { //lrPay
+
+                    $("#pay_url_div").show()
+                    $("#country_code_div").hide()
+                    $("#back_url_show_div").show()
+                    $("#back_ip_div").show()
+                    $("#extended_params_div").show()
+                    $("#merchants_div").show()
+                    $("#pay_code_div").hide()
+                    $("#bank_pay_id_div").show()
+                    $("#key_div").show()
+                    $("#public_key_div").hide()
+                    $("#private_key_div").show()
+
+                    $("#pay_url").attr('lay-verify', 'required')
+                    $("#country_code").removeAttr('lay-verify')
+                    $("#back_url_show").removeAttr('lay-verify')
+                    $("#back_ip").removeAttr('lay-verify')
+                    $("#extended_params").attr('lay-verify', 'required')
+                    $("#merchants").attr('lay-verify', 'required')
+                    $("#pay_code").removeAttr('lay-verify')
+                    $("#bank_pay_id").attr('lay-verify', 'required')
+                    $("#key").attr('lay-verify', 'required')
+                    $("#public_key").removeAttr('lay-verify')
+                    $("#private_key").attr('lay-verify', 'required')
+
+                } else if (data.value == 4) { //wowPay
+
+                    $("#pay_url_div").show()
+                    $("#country_code_div").hide()
+                    $("#back_url_show_div").show()
+                    $("#back_ip_div").show()
+                    $("#extended_params_div").show()
+                    $("#merchants_div").show()
+                    $("#pay_code_div").hide()
+                    $("#bank_pay_id_div").show()
+                    $("#key_div").show()
+                    $("#public_key_div").hide()
+                    $("#private_key_div").hide()
+
+                    $("#pay_url").attr('lay-verify', 'required')
+                    $("#country_code").removeAttr('lay-verify')
+                    $("#back_url_show").removeAttr('lay-verify')
+                    $("#back_ip").removeAttr('lay-verify')
+                    $("#extended_params").attr('lay-verify', 'required')
+                    $("#merchants").attr('lay-verify', 'required')
+                    $("#pay_code").removeAttr('lay-verify')
+                    $("#bank_pay_id").attr('lay-verify', 'required')
+                    $("#key").attr('lay-verify', 'required')
+                    $("#public_key").removeAttr('lay-verify')
+                    $("#private_key").removeAttr('lay-verify')
+
+                }else if(data.value == 1){ //本地代付
+                    $("#pay_url_div").hide()
+                    $("#country_code_div").hide()
+                    $("#back_url_show_div").hide()
+                    $("#back_ip_div").hide()
+                    $("#extended_params_div").hide()
+                    $("#merchants_div").hide()
+                    $("#pay_code_div").hide()
+                    $("#bank_pay_id_div").hide()
+                    $("#key_div").hide()
+                    $("#public_key_div").hide()
+                    $("#private_key_div").hide()
+
+                    $("#pay_url").removeAttr('lay-verify')
+                    $("#country_code").removeAttr('lay-verify')
+                    $("#back_url_show").removeAttr('lay-verify')
+                    $("#back_ip").removeAttr('lay-verify')
+                    $("#extended_params").removeAttr('lay-verify')
+                    $("#merchants").removeAttr('lay-verify')
+                    $("#pay_code").removeAttr('lay-verify')
+                    $("#bank_pay_id").removeAttr('lay-verify')
+                    $("#key").removeAttr('lay-verify')
+                    $("#public_key").removeAttr('lay-verify')
+                    $("#private_key").removeAttr('lay-verify')
+                }
+
+
+            })
+
+
+            /* 监听表单提交 */
+            form.on('submit(comfireEdit)', function (data) {
+                // layer.msg(JSON.stringify(data.field));
+                // console.log("JSON.stringify(data.field)", JSON.stringify(data.field))
+                var param = {};
+
+                param['id'] = currParentDatas.ID;
+                param['name'] = data.field.name;
+                param['pay_type'] = data.field.pay_type;
+                param['country_id'] = data.field.country_id;
+                param['currency_symbol'] = data.field.currency_symbol;
+                param['exchange_rate'] = data.field.exchange_rate;
+
+                //这两个参数待定
+                //这个参数暂时不要
+                // param['bank_pay_id_name'] = "lrpay";
+                param['kinds'] = 2;
+                //这个也不知道是啥
+                // param['back_url'] = data.field.back_url;
+
+
+                if (selectPayTypeValue == 2) {
+                    param['pay_url'] = data.field.pay_url;
+                    param['country_code'] = data.field.country_code;
+                    param['back_url_show'] = data.field.back_url_show;
+                    if(data.field.back_ip){
+                        param['back_ip'] = data.field.back_ip;
+                    }
+                    param['extended_params'] = data.field.extended_params;
+                    param['merchants'] = data.field.merchants;
+                    param['pay_code'] = data.field.pay_code;
+                    param['bank_pay_id'] = data.field.bank_pay_id;
+                    // param['key'] = data.field.key;
+                    param['public_key'] = data.field.public_key;
+                    param['private_key'] = data.field.private_key;
+
+
+                } else if (selectPayTypeValue == 3) {
+
+                    param['pay_url'] = data.field.pay_url;
+                    // param['country_code'] = data.field.country_code;
+                    param['back_url_show'] = data.field.back_url_show;
+                    if(data.field.back_ip){
+                        param['back_ip'] = data.field.back_ip;
+                    }
+                    param['extended_params'] = data.field.extended_params;
+                    param['merchants'] = data.field.merchants;
+                    param['pay_code'] = data.field.pay_code;
+                    param['bank_pay_id'] = data.field.bank_pay_id;
+                    param['key'] = data.field.key;
+                    // param['public_key'] = data.field.public_key;
+                    param['private_key'] = data.field.private_key;
+
+                } else if (selectPayTypeValue == 4) {
+
+                    param['pay_url'] = data.field.pay_url;
+                    // param['country_code'] = data.field.country_code;
+                    param['back_url_show'] = data.field.back_url_show;
+                    if(data.field.back_ip){
+                        param['back_ip'] = data.field.back_ip;
+                    }
+                    param['extended_params'] = data.field.extended_params;
+                    param['merchants'] = data.field.merchants;
+                    // param['pay_code'] = data.field.pay_code;
+                    param['bank_pay_id'] = data.field.bank_pay_id;
+                    param['key'] = data.field.key;
+                    // param['public_key'] = data.field.public_key;
+                    // param['private_key'] = data.field.private_key;
+
+                }
+
+                $.ajax({
+                    url: global_requestAddress + global_requestAddress_js_anotherPay + "?action=update",
+                    headers: {
+                        "token": mybck,
+                    },
+                    data: param,
+                    type: "POST",
+                    dataType: "json",
+                    success: function (addResult) {
+
+                        if (addResult.code === 2000) {
+                            // layer.msg(addResult.msg);
+                            notice.msg(addResult.msg, {icon: 1});
+                            setTimeout(function () {
+                                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                                parent.layer.close(index);
+                                // window.parent.location.reload();
+                            }, 1300)
+
+                        } else {
+                            notice.msg(addResult.msg, {icon: 2});
+                        }
+
+                    },
+                });
+
+                return false;
+            });
+
+            //添加内容点击事件
+            $("#cancelAdd").click(function () {
+
+                // layer.msg("取消操作");
+                notice.msg('取消操作!', {icon: 5});
+                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                parent.layer.close(index);
+                // window.parent.location.reload();
+
+
+                return false;
+
+            })
+
+        })
+    }
+</script>
+</body>
+</html>
